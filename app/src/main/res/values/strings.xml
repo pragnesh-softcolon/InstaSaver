@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">Insta Saver</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="nav_open">Open</string>
+    <string name="nav_close">Close</string>
+    <string name="admob_app_id">ca-app-pub-4946234427020051~2898164539</string>
+    <string name="admob_banner_id">ca-app-pub-4946234427020051/5924439660</string>
+
+
+
+
+    <string name="admob_initial_app_id">ca-app-pub-4946234427020051~1692666095</string>
+    <string name="admob_initial_id">ca-app-pub-4946234427020051/6152755473</string>
+
+</resources>

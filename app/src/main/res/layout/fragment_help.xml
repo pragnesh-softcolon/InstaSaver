@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:orientation="vertical"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#363636"
+    tools:context=".Fragment.help"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_marginTop="@dimen/_10sdp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/_10sdp"
+        android:layout_marginRight="@dimen/_10sdp"
+        app:counterEnabled="true"
+        app:counterMaxLength="200"
+        app:counterTextColor="@color/white"
+        android:hint="Feedback">
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/feedback"
+            android:layout_width="match_parent"
+            android:maxLength="200"
+            android:gravity="left|top"
+            android:layout_height="@dimen/_150sdp"
+            android:textSize="@dimen/_15ssp"
+            android:textColor="@color/black"
+            tools:ignore="RtlHardcoded" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <RatingBar
+        android:id="@+id/Rbar"
+        android:layout_width="wrap_content"
+        android:progressTint="@color/red"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        tools:ignore="SpeakableTextPresentCheck" />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/send"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/_10sdp"
+        android:layout_marginEnd="@dimen/_10sdp"
+        android:background="@drawable/buttonebg"
+        android:text="Send Feedback"
+        android:textColor="@color/white" />
+</LinearLayout>

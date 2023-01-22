@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="#363636"
+    android:layout_height="match_parent"
+    tools:context=".Fragment.profile">
+    <TableLayout
+        android:layout_marginTop="@dimen/_10sdp"
+        android:id="@+id/components"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1">
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/ed_first_name"
+                android:layout_width="0dp"
+                android:layout_weight="3.5"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/Fname_tv"
+                android:layout_marginLeft="@dimen/_10sdp"
+                android:layout_marginRight="@dimen/_5sdp"
+                android:hint="Profile URL">
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/getprofilepiclink"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:maxLines="2"
+                    android:textSize="@dimen/_10ssp"
+                    android:textColor="@color/black" />
+            </com.google.android.material.textfield.TextInputLayout>
+            <androidx.appcompat.widget.AppCompatButton
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:id="@+id/getprofilepic"
+                android:layout_weight="1"
+                android:layout_marginEnd="@dimen/_10sdp"
+                android:textColor="@color/white"
+                android:background="@drawable/buttonebg"
+                android:text="Get Profile"/>
+        </TableRow>
+    </TableLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/downloadprofilepic"
+        android:layout_below="@id/components"
+        android:layout_marginStart="@dimen/_10sdp"
+        android:layout_marginTop="@dimen/_10sdp"
+        android:layout_marginEnd="@dimen/_10sdp"
+        android:layout_marginBottom="@dimen/_10sdp">
+
+        <com.google.android.gms.ads.AdView
+            android:id="@+id/adView"
+            android:layout_alignParentBottom="true"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="visible"
+            app:adSize="BANNER"
+            app:adUnitId="@string/admob_banner_id" />
+
+        <ImageView
+            android:id="@+id/particularprofilepic"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@id/adView"
+            android:layout_centerInParent="true"
+            android:layout_marginBottom="@dimen/_5sdp"
+            android:fitsSystemWindows="true"
+            android:scaleType="centerCrop" />
+
+    </RelativeLayout>
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/downloadprofilepic"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="@dimen/_10sdp"
+        android:layout_marginEnd="@dimen/_10sdp"
+        android:layout_marginBottom="@dimen/_10sdp"
+        android:background="@drawable/buttonebg"
+        android:text="Download"
+        android:textColor="@color/white" />
+
+</RelativeLayout>
