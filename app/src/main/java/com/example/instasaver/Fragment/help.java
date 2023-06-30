@@ -13,10 +13,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.Toast;
 
 import com.example.instasaver.R;
+import com.example.instasaver.utils.textUtils;
 import com.google.android.material.textfield.TextInputEditText;
 
 import java.util.Objects;
@@ -27,6 +29,7 @@ public class help extends Fragment {
     TextInputEditText feedback;
     RatingBar ratingBar;
     Button send;
+    ImageView twitter,linkedin,instagram;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -34,17 +37,42 @@ public class help extends Fragment {
         feedback=view.findViewById(R.id.feedback);
         ratingBar=view.findViewById(R.id.Rbar);
         send=view.findViewById(R.id.send);
-        send.setOnClickListener(new View.OnClickListener() {
+        twitter=view.findViewById(R.id.twitter);
+        instagram=view.findViewById(R.id.insta);
+        linkedin=view.findViewById(R.id.linkedin);
+
+        twitter.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view)
-            {
+            public void onClick(View view) {
+                Intent i = new Intent(Intent.ACTION_VIEW);
+                i.setData(Uri.parse(textUtils.TWITTER));
+                startActivity(i);
+            }
+        });
+        instagram.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent i = new Intent(Intent.ACTION_VIEW);
+                i.setData(Uri.parse(textUtils.INSTAGRAM));
+                startActivity(i);
+            }
+        });
+        linkedin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent i = new Intent(Intent.ACTION_VIEW);
+                i.setData(Uri.parse(textUtils.LINKEDIN));
+                startActivity(i);
+            }
+        });
+        send.setOnClickListener(view -> {
 //                Toast.makeText(getContext(), "Select Gamil App for Feedback", Toast.LENGTH_LONG).show();
-                String rating=String.valueOf(ratingBar.getRating());
-                String Feedback=feedback.getText().toString();
-                String Finel_Feedback=Feedback+"\n"+"Rating : "+rating;
-                String whatsappUrl = "https://api.whatsapp.com/send?phone="+"+918128274881"+"&text="+Finel_Feedback;
-                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(whatsappUrl));
-                startActivity(intent);
+            String rating=String.valueOf(ratingBar.getRating());
+            String Feedback=feedback.getText().toString();
+            String Finel_Feedback=Feedback+"\n"+"Rating : "+rating;
+            String whatsappUrl = textUtils.FEEDBACK_URL +Finel_Feedback;
+            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(whatsappUrl));
+            startActivity(intent);
 
 
 //                Intent email = new Intent(Intent.ACTION_SEND);
@@ -56,8 +84,9 @@ public class help extends Fragment {
 //                  email.setType("message/rfc822");
 //                  startActivity(Intent.createChooser(email, "Choose an Email client :"));
 
-            }
         });
+
+
         return view;
     }
 }

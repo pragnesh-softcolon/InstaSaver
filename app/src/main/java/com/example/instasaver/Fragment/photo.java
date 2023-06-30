@@ -35,6 +35,7 @@ import com.example.instasaver.Models.Photo.GetPhoto;
 import com.example.instasaver.Pref.pref;
 import com.example.instasaver.R;
 import com.example.instasaver.adapter.imageAdapter;
+import com.example.instasaver.utils.textUtils;
 import com.example.instasaver.webviewLogin;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
@@ -127,7 +128,7 @@ public class photo extends Fragment {
                         }
                     });
                     String result2= StringUtils.substringBefore(URL,"/?");
-                    URL=result2+"/?__a=1&__d=dis";
+                    URL=result2+ textUtils.END_POINT;;
 //                    Toast.makeText(getContext(), "Don't Tap again...Wait For Few Secounds", Toast.LENGTH_SHORT).show();
                     if(tap<16){
                         processdata();

@@ -46,4 +46,30 @@
         android:background="@drawable/buttonebg"
         android:text="Send Feedback"
         android:textColor="@color/white" />
+    <LinearLayout
+        android:layout_marginTop="@dimen/_10sdp"
+        android:layout_width="match_parent"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:layout_height="wrap_content">
+        <ImageView
+            android:id="@+id/insta"
+            android:src="@drawable/instagram"
+            android:layout_width="@dimen/_30sdp"
+            android:layout_marginEnd="@dimen/_10sdp"
+            android:layout_height="@dimen/_30sdp"/>
+        <ImageView
+            android:id="@+id/linkedin"
+            android:src="@drawable/linkedin"
+            android:layout_width="@dimen/_30sdp"
+            android:layout_marginEnd="@dimen/_10sdp"
+            android:layout_height="@dimen/_30sdp"/>
+
+        <ImageView
+            android:id="@+id/twitter"
+            android:src="@drawable/twitter"
+            android:layout_width="@dimen/_30sdp"
+            android:layout_marginEnd="@dimen/_10sdp"
+            android:layout_height="@dimen/_30sdp"/>
+    </LinearLayout>
 </LinearLayout>
