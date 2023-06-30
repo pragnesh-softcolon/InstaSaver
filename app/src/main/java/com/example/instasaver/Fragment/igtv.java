@@ -3,6 +3,7 @@ package com.example.instasaver.Fragment;
 import android.app.Dialog;
 import android.app.DownloadManager;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
@@ -22,26 +23,36 @@ import android.widget.MediaController;
 import android.widget.Toast;
 import android.widget.VideoView;
 
+import com.android.volley.AuthFailureError;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.instasaver.Models.IGTV.GetIgtv;
+import com.example.instasaver.Pref.pref;
 import com.example.instasaver.R;
+import com.example.instasaver.webviewLogin;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.InterstitialAd;
+import com.google.android.gms.ads.LoadAdError;
 import com.google.android.gms.ads.MobileAds;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import org.apache.commons.lang3.StringUtils;
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class igtv extends Fragment {
 
     String URL="null";
+    int tap =0;
     VideoView mparticularigtv;
     EditText getigtvlink;
     Button getigtv,downloadigtv;
@@ -70,6 +81,7 @@ public class igtv extends Fragment {
         dialog.setContentView(R.layout.loading_dialog);
         dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         dialog.setCancelable(false);
+        tap = new pref(getContext()).getTap();
         MobileAds.initialize(getContext(), getString(R.string.admob_app_id));
 
         // create ad request
@@ -107,7 +119,12 @@ public class igtv extends Fragment {
                     String result2= StringUtils.substringBefore(URL,"/?");
                     URL=result2+"/?__a=1&__d=dis";
 //                    Toast.makeText(getContext(), "Don't Tap again...Wait For Few Secounds", Toast.LENGTH_SHORT).show();
-                    processdata();
+                    if(tap<16){
+                        processdata();
+                    }
+                    else{
+                        Toast.makeText(getContext(), "You reached your today's limit", Toast.LENGTH_LONG).show();
+                    }
                 }
             }
         });
@@ -154,13 +171,36 @@ public class igtv extends Fragment {
             @Override
             public void onResponse(String response)
             {
+                new pref(getContext()).setTap(tap+1);
                 Log.e("anytext2",response);
                 try {
-                    GsonBuilder gsonBuilder = new GsonBuilder();
-                    Gson gson = gsonBuilder.create();
-                    GetIgtv getigtv=gson.fromJson(response,GetIgtv.class);
-                    igtvurl=getigtv.getGraphql().getShortcodeMedia().getVideoUrl();
-                    Log.e("anyText",igtvurl);
+//                    GsonBuilder gsonBuilder = new GsonBuilder();
+//                    Gson gson = gsonBuilder.create();
+//                    GetIgtv getigtv=gson.fromJson(response,GetIgtv.class);
+//                    igtvurl=getigtv.getGraphql().getShortcodeMedia().getVideoUrl();
+//                    Log.e("anyText",igtvurl);
+                    JSONObject jsonObject = new JSONObject(response);
+                    JSONArray itemsArray = jsonObject.getJSONArray("items");
+
+                    if (itemsArray.length() > 0) {
+                        JSONObject itemObject = itemsArray.getJSONObject(0);
+                        JSONArray videoVersionsArray = itemObject.getJSONArray("video_versions");
+
+                        int maxWidth = 0;
+                        int maxHeight = 0;
+
+                        for (int i = 0; i < videoVersionsArray.length(); i++) {
+                            JSONObject videoVersionObject = videoVersionsArray.getJSONObject(i);
+                            int width = videoVersionObject.getInt("width");
+                            int height = videoVersionObject.getInt("height");
+
+                            if (width > maxWidth && height > maxHeight) {
+                                maxWidth = width;
+                                maxHeight = height;
+                                igtvurl = videoVersionObject.getString("url");
+                            }
+                        }
+                    }
                     uri2 = Uri.parse(igtvurl);
 
                     mparticularigtv.setMediaController(mediaController);
@@ -180,14 +220,60 @@ public class igtv extends Fragment {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
+                Log.e("anyText",""+error.networkResponse.statusCode);
                 dialog.dismiss();
-                Log.e("anyText",""+error);
-                Toast.makeText(getContext(), "Something went wrong", Toast.LENGTH_SHORT).show();
+                if(error.networkResponse.statusCode == 401){
+                    checkAd();
+
+                }
+                else
+                {
+                    Toast.makeText(getContext(), "Something went wrong", Toast.LENGTH_SHORT).show();
+                }
             }
-        });
+        }){
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError
+            {
+
+                Map<String, String> headers = super.getHeaders();
+                if (headers == null || headers.isEmpty()) {
+                    headers = new HashMap<>();
+                }
+
+                // Add the cookie to the request headers
+                headers.put("Cookie", new pref(getContext()).getCookie());
+                return headers;
+            }
+        };
         RequestQueue queue= Volley.newRequestQueue(requireContext());
         queue.add(request);
     }
+
+    private void checkAd() {
+        interstitial.setAdListener(new AdListener() {
+            @Override
+            public void onAdClosed() {
+                new pref(getContext()).deleteCookie();
+                Toast.makeText(getContext(), "Something went wrong...Login again", Toast.LENGTH_LONG).show();
+                Intent intent=new Intent(getContext(), webviewLogin.class);
+                startActivity(intent);
+                getActivity().finish();
+            }
+
+            @Override
+            public void onAdFailedToLoad(LoadAdError loadAdError) {
+                new pref(getContext()).deleteCookie();
+                Toast.makeText(getContext(), "Something went wrong...Login again", Toast.LENGTH_LONG).show();
+                Intent intent=new Intent(getContext(), webviewLogin.class);
+                startActivity(intent);
+                getActivity().finish();
+            }
+
+            // Other callback methods...
+        });
+    }
+
     private void displayInterstitial()
     {
         // If Interstitial Ads are loaded then show them, otherwise do nothing.

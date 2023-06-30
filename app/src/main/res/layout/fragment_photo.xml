@@ -49,7 +49,6 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@id/downloadphoto"
         android:layout_below="@id/components"
         android:layout_marginStart="@dimen/_10sdp"
         android:layout_marginTop="@dimen/_10sdp"
@@ -65,27 +64,26 @@
             app:adSize="BANNER"
             app:adUnitId="@string/admob_banner_id" />
 
-        <ImageView
+        <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/particularphoto"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:layout_above="@id/adView"
             android:layout_centerInParent="true"
-            android:layout_marginBottom="@dimen/_5sdp"
             android:fitsSystemWindows="true"
             android:scaleType="centerCrop" />
     </RelativeLayout>
 
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/downloadphoto"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_marginStart="@dimen/_10sdp"
-        android:layout_marginEnd="@dimen/_10sdp"
-        android:layout_marginBottom="@dimen/_10sdp"
-        android:background="@drawable/buttonebg"
-        android:text="Download"
-        android:textColor="@color/white" />
+<!--    <androidx.appcompat.widget.AppCompatButton-->
+<!--        android:id="@+id/downloadphoto"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_alignParentBottom="true"-->
+<!--        android:layout_marginStart="@dimen/_10sdp"-->
+<!--        android:layout_marginEnd="@dimen/_10sdp"-->
+<!--        android:layout_marginBottom="@dimen/_10sdp"-->
+<!--        android:background="@drawable/buttonebg"-->
+<!--        android:text="Download"-->
+<!--        android:textColor="@color/white" />-->
 
 </RelativeLayout>

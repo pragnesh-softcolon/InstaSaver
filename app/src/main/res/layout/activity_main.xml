@@ -1,26 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.drawerlayout.widget.DrawerLayout
+<RelativeLayout
+    android:fitsSystemWindows="true"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/drawerlayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/black"
     tools:context=".MainActivity"
-    tools:ignore="HardcodedText">
+    android:orientation="vertical">
 
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_marginBottom="?attr/actionBarSize"
         android:id="@+id/framelayout">
 
     </FrameLayout>
 
-    <com.google.android.material.navigation.NavigationView
+    <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/navigationview"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:layout_gravity="start"
+        android:backgroundTint="@color/white"
+        android:layout_width="match_parent"
+        android:layout_alignParentBottom="true"
+        android:layout_height="?attr/actionBarSize"
+        style="@style/Widget.MaterialComponents.BottomNavigationView.Colored"
         app:menu="@menu/menu" />
 
-</androidx.drawerlayout.widget.DrawerLayout>
+</RelativeLayout>

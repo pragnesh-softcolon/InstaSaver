@@ -3,6 +3,7 @@ package com.example.instasaver.Fragment;
 import android.app.Dialog;
 import android.app.DownloadManager;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
@@ -21,6 +22,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -28,16 +30,22 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.bumptech.glide.Glide;
 import com.example.instasaver.Models.Profile.GetProfile;
+import com.example.instasaver.Pref.pref;
 import com.example.instasaver.R;
+import com.example.instasaver.webviewLogin;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.InterstitialAd;
+import com.google.android.gms.ads.LoadAdError;
 import com.google.android.gms.ads.MobileAds;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import org.apache.commons.lang3.StringUtils;
+
+import java.util.HashMap;
+import java.util.Map;
 
 
 public class profile extends Fragment {
@@ -50,6 +58,7 @@ public class profile extends Fragment {
     View view;
     private InterstitialAd interstitial;
     Dialog dialog;
+    int tap =0;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -67,6 +76,7 @@ public class profile extends Fragment {
         dialog.setContentView(R.layout.loading_dialog);
         dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         dialog.setCancelable(false);
+        tap = new pref(getContext()).getTap();
         MobileAds.initialize(getContext(), getString(R.string.admob_app_id));
 
         // create ad request
@@ -104,7 +114,12 @@ public class profile extends Fragment {
                     String result2= StringUtils.substringBefore(URL,"?");
                     URL=result2+"/?__a=1&__d=dis";
 //                    Toast.makeText(getContext(), "Don't Tap again...Wait For Few Secounds", Toast.LENGTH_SHORT).show();
-                    processdata();
+                    if(tap<16){
+                        processdata();
+                    }
+                    else{
+                        Toast.makeText(getContext(), "You reached your today's limit", Toast.LENGTH_LONG).show();
+                    }
                 }
             }
         });
@@ -149,8 +164,11 @@ public class profile extends Fragment {
             @Override
             public void onResponse(String response)
             {
+                new pref(getContext()).setTap(tap+1);
+                Log.e("anyText",URL);
                 Log.e("anyText",response);
                 try {
+                    Log.e("anyText",""+response);
                     GsonBuilder gsonBuilder = new GsonBuilder();
                     Gson gson = gsonBuilder.create();
                     GetProfile getProfile = gson.fromJson(response,GetProfile.class);
@@ -159,7 +177,6 @@ public class profile extends Fragment {
 //                    if (!isPrivet)
 //                    {
                         profilepicurl = getProfile.getGraphql().getUser().getProfilePicUrlHd();
-
                         Log.e("anyText",profilepicurl);
                         uri2 = Uri.parse(profilepicurl);
                         Glide.with(getContext()).load(uri2).into(mparticularprofilepic);
@@ -176,13 +193,56 @@ public class profile extends Fragment {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
+                Log.e("anyText",""+error.networkResponse.statusCode);
                 dialog.dismiss();
-                Log.e("anyText",""+error);
-                Toast.makeText(getContext(), "Something went wrong", Toast.LENGTH_SHORT).show();
+                if(error.networkResponse.statusCode == 401){
+                    checkAd();
+                }
+                else
+                {
+                    Toast.makeText(getContext(), "Something went wrong", Toast.LENGTH_SHORT).show();
+                }
             }
-        });
+        }){
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError
+            {
+
+                Map<String, String> headers = super.getHeaders();
+                if (headers == null || headers.isEmpty()) {
+                    headers = new HashMap<>();
+                }
+
+                // Add the cookie to the request headers
+                headers.put("Cookie", new pref(getContext()).getCookie());
+                return headers;
+            }
+        };
         RequestQueue queue= Volley.newRequestQueue(requireContext());
         queue.add(request);
+    }
+    private void checkAd() {
+        interstitial.setAdListener(new AdListener() {
+            @Override
+            public void onAdClosed() {
+                new pref(getContext()).deleteCookie();
+                Toast.makeText(getContext(), "Something went wrong...Login again", Toast.LENGTH_LONG).show();
+                Intent intent=new Intent(getContext(), webviewLogin.class);
+                startActivity(intent);
+                getActivity().finish();
+            }
+
+            @Override
+            public void onAdFailedToLoad(LoadAdError loadAdError) {
+                new pref(getContext()).deleteCookie();
+                Toast.makeText(getContext(), "Something went wrong...Login again", Toast.LENGTH_LONG).show();
+                Intent intent=new Intent(getContext(), webviewLogin.class);
+                startActivity(intent);
+                getActivity().finish();
+            }
+
+            // Other callback methods...
+        });
     }
     private void displayInterstitial()
     {

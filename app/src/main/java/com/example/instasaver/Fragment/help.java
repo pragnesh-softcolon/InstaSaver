@@ -38,18 +38,23 @@ public class help extends Fragment {
             @Override
             public void onClick(View view)
             {
-                Toast.makeText(getContext(), "Select Gamil App for Feedback", Toast.LENGTH_LONG).show();
+//                Toast.makeText(getContext(), "Select Gamil App for Feedback", Toast.LENGTH_LONG).show();
                 String rating=String.valueOf(ratingBar.getRating());
                 String Feedback=feedback.getText().toString();
                 String Finel_Feedback=Feedback+"\n"+"Rating : "+rating;
-                Intent email = new Intent(Intent.ACTION_SEND);
-                  email.putExtra(Intent.EXTRA_EMAIL, new String[]
-                          { "pragnesh.softcolon@gmail.com"});
-                  email.putExtra(Intent.EXTRA_SUBJECT, "Feedback Of Insta-saver App");
-                  email.putExtra(Intent.EXTRA_TEXT, Finel_Feedback);
-                  //need this to prompts email client only
-                  email.setType("message/rfc822");
-                  startActivity(Intent.createChooser(email, "Choose an Email client :"));
+                String whatsappUrl = "https://api.whatsapp.com/send?phone="+"+918128274881"+"&text="+Finel_Feedback;
+                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(whatsappUrl));
+                startActivity(intent);
+
+
+//                Intent email = new Intent(Intent.ACTION_SEND);
+//                  email.putExtra(Intent.EXTRA_EMAIL, new String[]
+//                          { "pragnesh.softcolon@gmail.com"});
+//                  email.putExtra(Intent.EXTRA_SUBJECT, "Feedback Of Insta-saver App");
+//                  email.putExtra(Intent.EXTRA_TEXT, Finel_Feedback);
+//                  //need this to prompts email client only
+//                  email.setType("message/rfc822");
+//                  startActivity(Intent.createChooser(email, "Choose an Email client :"));
 
             }
         });
