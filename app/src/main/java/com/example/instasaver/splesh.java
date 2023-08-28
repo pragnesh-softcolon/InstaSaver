@@ -6,10 +6,14 @@ import androidx.appcompat.app.AppCompatDelegate;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.webkit.CookieManager;
 import android.webkit.CookieSyncManager;
 
 import com.example.instasaver.Pref.pref;
+
+import java.util.Calendar;
+import java.util.Date;
 
 public class splesh extends AppCompatActivity {
 
@@ -18,7 +22,6 @@ public class splesh extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splesh);
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-//        delay for 5 secounds
         Thread thread = new Thread(() -> {
             try {
                 Thread.sleep(1000);

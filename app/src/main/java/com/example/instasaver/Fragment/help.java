@@ -85,8 +85,6 @@ public class help extends Fragment {
 //                  startActivity(Intent.createChooser(email, "Choose an Email client :"));
 
         });
-
-
         return view;
     }
 }

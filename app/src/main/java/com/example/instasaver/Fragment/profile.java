@@ -119,7 +119,11 @@ public class profile extends Fragment {
                         processdata();
                     }
                     else{
-                        Toast.makeText(getContext(), "You reached your today's limit", Toast.LENGTH_LONG).show();
+                        new pref(getContext()).deleteCookie();
+                        Toast.makeText(getContext(), "Something went wrong...Login again", Toast.LENGTH_LONG).show();
+                        Intent intent=new Intent(getContext(), webviewLogin.class);
+                        startActivity(intent);
+                        getActivity().finish();
                     }
                 }
             }

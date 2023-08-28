@@ -50,6 +50,7 @@ import org.json.JSONObject;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 
 public class reel extends Fragment {
@@ -99,70 +100,67 @@ public class reel extends Fragment {
         interstitial.loadAd(adIRequest);
 
 
-        getreel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v)
+        getreel.setOnClickListener(v -> {
+            URL=getreellink.getText().toString();
+            if (getreellink.length()<10)
             {
-                URL=getreellink.getText().toString();
-                if (getreellink.length()<10)
-                {
-                    Toast.makeText(getContext(), "Enter URL First", Toast.LENGTH_SHORT).show();
-                }
-                else
-                {
-                    displayInterstitial();
-                    // Prepare an Interstitial Ad Listener
-                    interstitial.setAdListener(new AdListener() {
-                        @Override
-                        public void onAdLoaded()
-                        {
-                            // Call displayInterstitial() function when the Ad loads
-                            displayInterstitial();
-                        }
-                    });
-                    String result2= StringUtils.substringBefore(URL,"/?");
-                    URL=result2+ textUtils.END_POINT;
+                Toast.makeText(getContext(), "Enter URL First", Toast.LENGTH_SHORT).show();
+            }
+            else
+            {
+                displayInterstitial();
+                // Prepare an Interstitial Ad Listener
+                interstitial.setAdListener(new AdListener() {
+                    @Override
+                    public void onAdLoaded()
+                    {
+                        // Call displayInterstitial() function when the Ad loads
+                        displayInterstitial();
+                    }
+                });
+                String result2= StringUtils.substringBefore(URL,"/?");
+                URL=result2+ textUtils.END_POINT;
 //                    Toast.makeText(getContext(), "Don't Tap again...Wait For Few Secounds", Toast.LENGTH_SHORT).show();
-                    if(tap<16){
-                        processdata();
-                    }
-                    else{
-                        Toast.makeText(getContext(), "You reached your today's limit", Toast.LENGTH_LONG).show();
-                    }
-
+                if(tap<16){
+                    processdata();
                 }
+                else{
+                    new pref(getContext()).deleteCookie();
+                    Toast.makeText(getContext(), "Something went wrong...Login again", Toast.LENGTH_LONG).show();
+                    Intent intent=new Intent(getContext(), webviewLogin.class);
+                    startActivity(intent);
+                    getActivity().finish();
+                }
+
             }
         });
-        downloadreel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        downloadreel.setOnClickListener(v -> {
 
-                try
+            try
+            {
+                if (reelurl.equals("1")) {
+                    Toast.makeText(getContext(), "No video to download", Toast.LENGTH_SHORT).show();
+                }
                 {
-                    if (reelurl.equals("1")) {
-                        Toast.makeText(getContext(), "No video to download", Toast.LENGTH_SHORT).show();
-                    }
+                    DownloadManager.Request request = new DownloadManager.Request(uri2);
+                    request.setAllowedNetworkTypes(DownloadManager.Request.NETWORK_WIFI | DownloadManager.Request.NETWORK_MOBILE);
+                    request.setDescription("Your Reel Is downloading");
+                    request.allowScanningByMediaScanner();
+                    request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
+                    request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, "" + System.currentTimeMillis()+"_InstaSaver"+".mp4");
+                    DownloadManager manager = (DownloadManager) getActivity().getSystemService(Context.DOWNLOAD_SERVICE);
+                    manager.enqueue(request);
+                    Toast.makeText(getContext(), "Downloading started....", Toast.LENGTH_SHORT).show();
+                    int done= DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED;
+                    if (done==1)
                     {
-                        DownloadManager.Request request = new DownloadManager.Request(uri2);
-                        request.setAllowedNetworkTypes(DownloadManager.Request.NETWORK_WIFI | DownloadManager.Request.NETWORK_MOBILE);
-                        request.setDescription("Your Reel Is downloading");
-                        request.allowScanningByMediaScanner();
-                        request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
-                        request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, "" + System.currentTimeMillis()+"_InstaSaver"+".mp4");
-                        DownloadManager manager = (DownloadManager) getActivity().getSystemService(Context.DOWNLOAD_SERVICE);
-                        manager.enqueue(request);
-                        Toast.makeText(getContext(), "Downloading started....", Toast.LENGTH_SHORT).show();
-                        int done= DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED;
-                        if (done==1)
-                        {
-                            Toast.makeText(getContext(), "Download Completed", Toast.LENGTH_SHORT).show();
-                        }
+                        Toast.makeText(getContext(), "Download Completed", Toast.LENGTH_SHORT).show();
                     }
                 }
-                catch (Exception e)
-                {
+            }
+            catch (Exception e)
+            {
 
-                }
             }
         });
         return view;
@@ -174,77 +172,71 @@ public class reel extends Fragment {
     {
         dialog.show();
         Log.e("anyText",URL);
-        StringRequest request=new StringRequest(URL, new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                new pref(getContext()).setTap(tap+1);
-                Log.e("anyText",response);
-                try {
+        StringRequest request=new StringRequest(URL, response -> {
+            new pref(getContext()).setTap(tap+1);
+            Log.e("anyText",response);
+            try {
 //                    GsonBuilder gsonBuilder = new GsonBuilder();
 //                    Gson gson = gsonBuilder.create();
 //                    GetReel getReel = gson.fromJson(response,GetReel.class);
 //                    reelurl = getReel.getGraphql().getShortcodeMedia().getVideoUrl();
 
-                    JSONObject jsonObject = new JSONObject(response);
-                    JSONArray itemsArray = jsonObject.getJSONArray("items");
+                JSONObject jsonObject = new JSONObject(response);
+                JSONArray itemsArray = jsonObject.getJSONArray("items");
 
-                    if (itemsArray.length() > 0) {
-                        JSONObject itemObject = itemsArray.getJSONObject(0);
-                        JSONArray videoVersionsArray = itemObject.getJSONArray("video_versions");
+                if (itemsArray.length() > 0) {
+                    JSONObject itemObject = itemsArray.getJSONObject(0);
+                    JSONArray videoVersionsArray = itemObject.getJSONArray("video_versions");
 
-                        int maxWidth = 0;
-                        int maxHeight = 0;
+                    int maxWidth = 0;
+                    int maxHeight = 0;
 
-                        for (int i = 0; i < videoVersionsArray.length(); i++) {
-                            JSONObject videoVersionObject = videoVersionsArray.getJSONObject(i);
-                            int width = videoVersionObject.getInt("width");
-                            int height = videoVersionObject.getInt("height");
+                    for (int i = 0; i < videoVersionsArray.length(); i++) {
+                        JSONObject videoVersionObject = videoVersionsArray.getJSONObject(i);
+                        int width = videoVersionObject.getInt("width");
+                        int height = videoVersionObject.getInt("height");
 
-                            if (width > maxWidth && height > maxHeight) {
-                                maxWidth = width;
-                                maxHeight = height;
-                                reelurl = videoVersionObject.getString("url");
-                            }
+                        if (width > maxWidth && height > maxHeight) {
+                            maxWidth = width;
+                            maxHeight = height;
+                            reelurl = videoVersionObject.getString("url");
                         }
                     }
-                    uri2 = Uri.parse(reelurl);
-                    mparticularreel.setMediaController(mediaController);
-                    mparticularreel.setVideoURI(uri2);
-                    mparticularreel.requestFocus();
-                    mparticularreel.seekTo(500);
-                    dialog.dismiss();
-
                 }
-                catch (Exception e)
-                {
-                    dialog.dismiss();
-                    Log.e("anyText",e.getMessage());
-                    GsonBuilder gsonBuilder = new GsonBuilder();
-                    Gson gson = gsonBuilder.create();
-                    GetReel getigtv=gson.fromJson(response,GetReel.class);
-                    reelurl=getigtv.getGraphql().getShortcodeMedia().getVideoUrl();
-                    uri2 = Uri.parse(reelurl);
-                    mparticularreel.setMediaController(mediaController);
-                    mparticularreel.setVideoURI(uri2);
-                    mparticularreel.requestFocus();
-                    mparticularreel.seekTo(500);
-                    Log.e("anyText",reelurl);
-//                    Toast.makeText(getContext(), "Something went wrong", Toast.LENGTH_SHORT).show();
-                }
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Log.e("anyText",""+error.networkResponse.statusCode);
+                uri2 = Uri.parse(reelurl);
+                mparticularreel.setMediaController(mediaController);
+                mparticularreel.setVideoURI(uri2);
+                mparticularreel.requestFocus();
+                mparticularreel.seekTo(500);
                 dialog.dismiss();
-                if(error.networkResponse.statusCode == 401){
-                    checkAd();
-                }
-                else
-                {
-                    Log.e("anyText",""+error.networkResponse.statusCode);
-                    Toast.makeText(getContext(), "Something went wrong", Toast.LENGTH_SHORT).show();
-                }
+
+            }
+            catch (Exception e)
+            {
+                dialog.dismiss();
+                Log.e("anyText",e.getMessage());
+                GsonBuilder gsonBuilder = new GsonBuilder();
+                Gson gson = gsonBuilder.create();
+                GetReel getigtv=gson.fromJson(response,GetReel.class);
+                reelurl=getigtv.getGraphql().getShortcodeMedia().getVideoUrl();
+                uri2 = Uri.parse(reelurl);
+                mparticularreel.setMediaController(mediaController);
+                mparticularreel.setVideoURI(uri2);
+                mparticularreel.requestFocus();
+                mparticularreel.seekTo(500);
+                Log.e("anyText",reelurl);
+//                    Toast.makeText(getContext(), "Something went wrong", Toast.LENGTH_SHORT).show();
+            }
+        }, error -> {
+            Log.e("anyText",""+error.networkResponse.statusCode);
+            dialog.dismiss();
+            if(error.networkResponse.statusCode == 401){
+                checkAd();
+            }
+            else
+            {
+                Log.e("anyText",""+error.networkResponse.statusCode);
+                Toast.makeText(getContext(), "Something went wrong", Toast.LENGTH_SHORT).show();
             }
         }){
             @Override
@@ -267,20 +259,20 @@ public class reel extends Fragment {
         interstitial.setAdListener(new AdListener() {
             @Override
             public void onAdClosed() {
-                new pref(getContext()).deleteCookie();
+                new pref(requireContext()).deleteCookie();
                 Toast.makeText(getContext(), "Something went wrong...Login again", Toast.LENGTH_LONG).show();
                 Intent intent=new Intent(getContext(), webviewLogin.class);
                 startActivity(intent);
-                getActivity().finish();
+                requireActivity().finish();
             }
 
             @Override
             public void onAdFailedToLoad(LoadAdError loadAdError) {
-                new pref(getContext()).deleteCookie();
+                new pref(requireContext()).deleteCookie();
                 Toast.makeText(getContext(), "Something went wrong...Login again", Toast.LENGTH_LONG).show();
                 Intent intent=new Intent(getContext(), webviewLogin.class);
                 startActivity(intent);
-                getActivity().finish();
+                requireActivity().finish();
             }
 
             // Other callback methods...

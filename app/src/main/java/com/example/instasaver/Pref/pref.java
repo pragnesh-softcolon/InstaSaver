@@ -5,9 +5,11 @@ import android.content.SharedPreferences;
 import android.webkit.CookieManager;
 import android.webkit.CookieSyncManager;
 
+import java.util.Date;
+
 public class pref {
     Context context;
-    private String APP_NAME= "INDEPENDENT_WORK_APP";
+    private String APP_NAME= "INSTA_SAVER";
 
     private SharedPreferences mSharedPreferences;
     private SharedPreferences.Editor prefsEditor;
